@@ -10,9 +10,17 @@ logger.set_level('special', 34)
 
 
 def scrape_collection(appId: int, collectionId: int):
+    """
+        Scrapes the items id's of a steam collection.
+    """
+
+    def getCollectionTitle(soup):
+        return soup.select('.workshopItemTitle')[0].text
+
     from bs4 import BeautifulSoup as bs
 
     app_name = is_valid_app_id(appId)
+    collection_name = ''
     if not app_name:
         logger.error(f'{appId} is not a valid application ID')
         return
@@ -24,7 +32,10 @@ def scrape_collection(appId: int, collectionId: int):
     req = requests.get(STEAM_URL + str(collectionId))
     soup = bs(req.text, 'lxml')
 
+    collection_name = getCollectionTitle(soup)
     text = soup.select('.rightSectionTopTitle')[0]
+
+    logger.special(f'> Detected collection: {collection_name}')
 
     i = 0
     out = 'steamcmd +login anonymous'
@@ -38,10 +49,10 @@ def scrape_collection(appId: int, collectionId: int):
 
             logger.log(f'> Found item: {x}')
 
-    with open('out.txt', 'w') as f:
+    with open(f'{app_name}-{collection_name}.txt', 'w') as f:
         f.write(out)
 
-    return i
+    return i, out
 
 # ===============
 # Utils
@@ -57,3 +68,7 @@ def is_valid_app_id(appId: int):
     if len(data) > 0:
         return data[0].text
     return False
+
+
+def sanitize_steamcmd_command(command: str):
+    return command
