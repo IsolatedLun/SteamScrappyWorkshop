@@ -4,7 +4,7 @@ from consts import VERSION
 from helper import show_all_commands, show_help
 
 from includes.Log4Py.log4Py import Logger
-from scrapper import scrape_collection
+from scrapper import sanitize_steamcmd_command, scrape_collection, scrape_search
 
 if __name__ == '__main__':
     loop = True
@@ -24,10 +24,20 @@ if __name__ == '__main__':
 
             if '--download' in options:
                 logger.alter(f'> Opening steamcmd client')
-                os.system(f'cd {STEAMCMD_DIR} && {command}')
+                os.system(
+                    f'cd {STEAMCMD_DIR} && {sanitize_steamcmd_command(command)}')
+
+        elif _input.startswith('search'):
+            appId, query, *options = tuple(_input.split(' ')[1:])
+
+            scrape_search(appId, query)
+
         elif _input == 'help':
             print(show_help())
 
-        if _input == 'exit':
+        elif _input == 'exit':
             loop = False
+        else:
+            logger.warn(
+                f'> Command not found: "{_input}", type help for options')
     logger.warn('Exitting...')

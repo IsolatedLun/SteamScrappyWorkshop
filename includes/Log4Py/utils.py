@@ -71,7 +71,7 @@ def default_log_saver(data: dict, *args):
     from os import path, mkdir
 
     if path.exists(args[0]):
-        with open(args[0] + '/' + args[1], 'a+') as f:
+        with open(args[0] + '/' + args[1], 'a+', encoding='utf-8') as f:
             f.write(
                 f'[{data["datetime"]}] {data["log_message"]} _{data["log_level"]}_' + '\n\n')
 
