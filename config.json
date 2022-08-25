@@ -1,0 +1,4 @@
+{
+  "out_dir": "output.txt",
+  "mode": "a+"
+}

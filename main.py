@@ -29,8 +29,15 @@ if __name__ == '__main__':
 
         elif _input.startswith('search'):
             appId, query, *options = tuple(_input.split(' ')[1:])
+            command = scrape_search(appId, query)
 
-            scrape_search(appId, query)
+            if '--download' in options:
+                logger.alter(f'> Opening steamcmd client')
+                os.system(
+                    f'cd {STEAMCMD_DIR} && {sanitize_steamcmd_command(command)}')
+
+        elif _input.startswith('search'):
+            appId, *options = tuple(_input.split(' ')[1:])
 
         elif _input == 'help':
             print(show_help())

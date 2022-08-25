@@ -1,4 +1,4 @@
-from helper import create_steamcmd_command
+from helper import output_commands
 from includes.Log4Py.log4Py import Logger
 from consts import STEAM_APP_URL, STEAM_SEARCH_URL, STEAM_URL, STEAMCMD_WORKSHOP
 
@@ -38,7 +38,7 @@ def scrape_collection(appId: int, collectionId: int):
     logger.special(f'> Detected collection: {collection_name}')
 
     i = 0
-    out = create_steamcmd_command()  # Login command
+    out = ''
     if text.text.find('collection') > -1:
         a_tags = soup.select('.collectionItem')
 
@@ -54,6 +54,7 @@ def scrape_collection(appId: int, collectionId: int):
         f.write(out)
 
     logger.alter('> DONE')
+    output_commands(out, app_name, collection_name)
 
     return i, out
 
@@ -85,7 +86,7 @@ def scrape_search(appId: int, query: str):
     soup = bs(req.text, 'lxml')
 
     i = 1
-    out = create_steamcmd_command()
+    out = ''
     cache = {}
     for item in soup.select('.workshopItem'):
         item_name, item_id = get_item_details(item)
@@ -104,14 +105,16 @@ def scrape_search(appId: int, query: str):
             logger.special(f'> Adding item: ' + item['name'])
     else:
         for idx in selected.split(' '):
-            # Converting idx to int because it str and int hashes are different.
-            (_, id), (_, name) = cache[int(idx)].items()
-            out += STEAMCMD_WORKSHOP.format(appId, id)
+            try:
+                # Converting idx to int because it str and int hashes are different.
+                (_, id), (_, name) = cache[int(idx)].items()
+                out += STEAMCMD_WORKSHOP.format(appId, id)
 
-            logger.special(f'> Adding item: {name}')
+                logger.special(f'> Adding item: {name}')
+            except:
+                logger.error(f'> {idx} not found')
 
-    with open(f'{app_name}-search-{query}.txt', 'w') as f:
-        f.write(out)
+    output_commands(out, app_name, query)
 
     return out
 
