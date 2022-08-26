@@ -1,4 +1,5 @@
 {
   "out_dir": "output.txt",
-  "mode": "a+"
+  "mode": "a+",
+  "steamcmd_dir": "C:/Users/user/Desktop/steamcmd"
 }

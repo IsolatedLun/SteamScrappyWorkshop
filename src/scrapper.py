@@ -1,6 +1,8 @@
-from helper import output_commands
+import os
+from src.handlers.alias_handler import handle_alias
+from src.utils import output_commands
 from includes.Log4Py.log4Py import Logger
-from consts import STEAM_APP_URL, STEAM_SEARCH_URL, STEAM_URL, STEAMCMD_WORKSHOP
+from src.consts import STEAM_APP_URL, STEAM_SEARCH_URL, STEAM_URL, STEAMCMD_DIR, STEAMCMD_WORKSHOP
 
 import requests
 import __main__
@@ -9,23 +11,34 @@ logger = Logger(__main__)
 logger.set_level('special', 34)
 
 
-def scrape_collection(appId: int, collectionId: int):
-    """
-        Scrapes the items id's of a steam collection.
-    """
+def scrape_root(scrape_type: str, alias: int,  *args):
+    app_name, app_id = is_valid_app_id(alias)
 
-    def getCollectionTitle(soup):
-        return soup.select('.workshopItemTitle')[0].text
-
-    from bs4 import BeautifulSoup as bs
-
-    app_name = is_valid_app_id(appId)
-    collection_name = ''
     if not app_name:
-        logger.error(f'{appId} is not a valid application ID')
+        logger.error(f'{app_id} is not a valid application ID')
         return
     else:
         logger.special(f'> Detected app: {app_name}')
+
+    if scrape_type == 'collection':
+        return scrape_collection(app_name, app_id, *args)
+    elif scrape_type == 'search':
+        return scrape_search(app_name, app_id, *args)
+    else:
+        logger.error(f'Scrapper "{scrape_type}" not found')
+
+
+def scrape_collection(app_name: str, app_id: int, collectionId: int):
+    """
+        Scrapes the items id's of a steam collection.
+    """
+    from bs4 import BeautifulSoup as bs
+
+    def getCollectionTitle(soup):
+        """
+            Gets the name of the title
+        """
+        return soup.select('.workshopItemTitle')[0].text
 
     logger.log(f'> Opening {STEAM_URL + str(collectionId)}')
 
@@ -45,7 +58,7 @@ def scrape_collection(appId: int, collectionId: int):
         for item in a_tags:
             x = item['id'].split('_')[1]
             # Download command
-            out += STEAMCMD_WORKSHOP.format(appId, id)
+            out += STEAMCMD_WORKSHOP.format(app_id, id)
             i += 1
 
             logger.log(f'> Found item: {x}')
@@ -59,30 +72,25 @@ def scrape_collection(appId: int, collectionId: int):
     return i, out
 
 
-def scrape_search(appId: int, query: str):
+def scrape_search(app_name: str, app_id: int, query: str):
     """
         Scrapes an app's search page for items depeding on the query.
     """
+    from bs4 import BeautifulSoup as bs
 
     def get_item_details(item):
+        """
+            Gets the item name and id
+        """
         item_name = item.select('.workshopItemTitle')[0].text
         item_id = item.select(
             '.ugc[data-publishedfileid]')[0]['data-publishedfileid']
 
         return item_name, item_id
 
-    from bs4 import BeautifulSoup as bs
+    logger.log(f'> Opening {STEAM_SEARCH_URL.format(app_id, query)}')
 
-    app_name = is_valid_app_id(appId)
-    if not app_name:
-        logger.error(f'{appId} is not a valid application ID')
-        return
-    else:
-        logger.special(f'> Detected app: {app_name}')
-
-    logger.log(f'> Opening {STEAM_SEARCH_URL.format(appId, query)}')
-
-    req = requests.get(STEAM_SEARCH_URL.format(appId, query))
+    req = requests.get(STEAM_SEARCH_URL.format(app_id, query))
     soup = bs(req.text, 'lxml')
 
     i = 1
@@ -101,14 +109,14 @@ def scrape_search(appId: int, query: str):
     if selected == 'all':
         logger.special('Adding all items...')
         for (id, item) in cache.items():
-            out += STEAMCMD_WORKSHOP.format(appId, item['id'])
+            out += STEAMCMD_WORKSHOP.format(app_id, item['id'])
             logger.special(f'> Adding item: ' + item['name'])
     else:
         for idx in selected.split(' '):
             try:
                 # Converting idx to int because it str and int hashes are different.
                 (_, id), (_, name) = cache[int(idx)].items()
-                out += STEAMCMD_WORKSHOP.format(appId, id)
+                out += STEAMCMD_WORKSHOP.format(app_id, id)
 
                 logger.special(f'> Adding item: {name}')
             except:
@@ -123,15 +131,23 @@ def scrape_search(appId: int, query: str):
 # ==============
 
 
-def is_valid_app_id(appId: int):
+def is_valid_app_id(alias: str):
     from bs4 import BeautifulSoup as bs
 
-    res = requests.get(STEAM_APP_URL + str(appId)).text
+    app_id, is_in_aliases, set_alias = handle_alias(alias)
+
+    res = requests.get(STEAM_APP_URL + str(app_id)).text
     data = bs(res, 'lxml').select('.apphub_AppName')
 
     if len(data) > 0:
-        return data[0].text
-    return False
+        text = data[0].text
+
+        if not is_in_aliases:
+            set_alias(text)
+            logger.special(f'Added alias {text} - {app_id}')
+
+        return text, app_id
+    return False, -1
 
 
 def sanitize_steamcmd_command(command: str):
@@ -142,3 +158,7 @@ def sanitize_steamcmd_command(command: str):
         return command
     else:
         return 'steamcmd' + command
+
+
+def run_steamcmd(command):
+    os.system(f'cd {STEAMCMD_DIR} && {sanitize_steamcmd_command(command)}')

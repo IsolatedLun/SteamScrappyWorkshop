@@ -2,8 +2,9 @@
 # Printing functions
 # =========================
 import json
+import os
 
-from consts import STEAMCMD_LOGIN
+from src.consts import BASE_DIR, STEAMCMD_LOGIN, load_config
 
 
 def show_all_commands(v: int):
@@ -20,8 +21,10 @@ def show_help():
         """
 COMMANDS:
 ------------------------------------
-collection  <app_id> <collection_id> --download(Automatically download items with steamcmd)
-search      <app_id> <query> --download(Automatically download items with steamcmd)
+collection  <app id or name> <collection id> --download(Automatically download items with steamcmd)
+search      <app id or name> <query> --download(Automatically download items with steamcmd)
+
+aliases     Shows all aliases.
 exit        Exits the app.
 ------------------------------------
 """
@@ -40,22 +43,16 @@ def output_commands(out: str, *vars: list[str]):
     else:
         out_dir = '-'.join(vars)
 
+    out_dir = os.path.join(BASE_DIR, out_dir)
     with open(out_dir, config['mode']) as f:
         f.seek(0)  # goto the 1st line
 
         data = f.readline()
 
         if data.startswith('steamcmd'):
-            print('No login')
             f.write(out)
         else:
-            print('Added login')
             f.write(STEAMCMD_LOGIN + out)
-
-
-def load_config():
-    with open('config.json', 'r') as f:
-        return json.loads(f.read())
 
 # =========================
 # Command functions
