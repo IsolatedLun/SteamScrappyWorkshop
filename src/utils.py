@@ -1,13 +1,13 @@
 # =========================
 # Printing functions
 # =========================
-import json
 import os
 
 from src.consts import BASE_DIR, STEAMCMD_LOGIN, load_config
 
 
 def show_all_commands(v: int):
+    # TODO: Create a command dict that stores the command and it's details to automate it.
     return \
         f"""
 SteamScrappyDownloader v{v}

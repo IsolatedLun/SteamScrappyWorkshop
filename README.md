@@ -11,3 +11,7 @@ Download or search any items/collections.
 - Clone this repo
 - Tweak `config.json`
 - `python main.py`
+
+#### To know
+
+- If you want every output file to be unique make `out_dir` -> `null`.

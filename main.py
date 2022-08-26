@@ -10,7 +10,7 @@ if __name__ == '__main__':
     loop = True
     logger = Logger(__main__)
 
-    print(show_all_commands(VERSION))
+    print(show_all_commands(VERSION))  # No need to log useless info
     while loop:
         _input = input('>| ')
 
