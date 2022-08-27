@@ -20,3 +20,49 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 STEAMCMD_DIR = load_config()['steamcmd_dir']
 ALIASES_DIR = os.path.join(BASE_DIR, 'aliases.json')
+
+COMMANDS = [
+    {
+        'name': 'collection',
+        'args': [
+            'app_alias', 'collection_id'
+        ],
+        'prefixes': [
+            {
+                'prefix': '--download',
+                'help_text': 'Automatically download items when finished.'
+            }
+        ],
+        'help_text': ''
+    },
+    {
+        'name': 'search',
+        'args': [
+            'app_alias', 'query'
+        ],
+        'prefixes': [
+            {
+                'prefix': '--download',
+                'help_text': 'Automatically download items when finished.'
+            }
+        ],
+        'help_text': ''
+    },
+    {
+        'name': 'aliases',
+        'help_text': 'Shows aliases',
+        'args': [],
+        'prefixes': []
+    },
+    {
+        'name': 'output',
+        'args': [],
+        'prefixes': [
+            {
+                'prefix': '--out_dir',
+                'help_text': 'The location of the output'
+            }
+        ],
+        'help_text': ''
+    }
+]

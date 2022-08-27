@@ -1,14 +1,10 @@
-from ast import alias
 import json
-import os
 
 from src.consts import ALIASES_DIR
+from src.utils import sanitize_text
 
 
 def handle_alias(app_alias: str):
-    def sanitize_text(text: str):
-        return '-'.join([x for x in text.split(' ')]).lower()
-
     def set(name: str):
         if app_alias.isnumeric():
             with open(ALIASES_DIR, 'r+') as f:

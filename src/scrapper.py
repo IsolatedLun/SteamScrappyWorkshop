@@ -1,6 +1,6 @@
 import os
 from src.handlers.alias_handler import handle_alias
-from src.utils import output_commands
+from src.utils import output_commands, sanitize_text
 from includes.Log4Py.log4Py import Logger
 from src.consts import STEAM_APP_URL, STEAM_SEARCH_URL, STEAM_URL, STEAMCMD_DIR, STEAMCMD_WORKSHOP
 
@@ -12,6 +12,9 @@ logger.set_level('special', 34)
 
 
 def scrape_root(scrape_type: str, alias: int,  *args):
+    """
+        Validates the app id then calls the scraper with it's arguments depeding on the type
+    """
     app_name, app_id = is_valid_app_id(alias)
 
     if not app_name:
@@ -28,7 +31,7 @@ def scrape_root(scrape_type: str, alias: int,  *args):
         logger.error(f'Scrapper "{scrape_type}" not found')
 
 
-def scrape_collection(app_name: str, app_id: int, collectionId: int):
+def scrape_collection(app_name: str, app_id: str, collectionId: str):
     """
         Scrapes the items id's of a steam collection.
     """
@@ -40,9 +43,21 @@ def scrape_collection(app_name: str, app_id: int, collectionId: int):
         """
         return soup.select('.workshopItemTitle')[0].text
 
+    # Assertion 1
+    if not collectionId.isnumeric():
+        logger.error(f"> Collection id must only contain numbers")
+        return 0, 0
+
     logger.log(f'> Opening {STEAM_URL + str(collectionId)}')
 
     req = requests.get(STEAM_URL + str(collectionId))
+    req_title = bs(req.text, 'html.parser').title.text
+
+    # Assertion 2
+    if req_title.endswith('Error'):
+        logger.error(f"> Invalid collection '{collectionId}'")
+        return 0, 0
+
     soup = bs(req.text, 'lxml')
 
     collection_name = getCollectionTitle(soup)
@@ -94,7 +109,7 @@ def scrape_search(app_name: str, app_id: int, query: str):
     soup = bs(req.text, 'lxml')
 
     i = 1
-    out = ''
+    out = {}
     cache = {}
     for item in soup.select('.workshopItem'):
         item_name, item_id = get_item_details(item)
@@ -104,25 +119,28 @@ def scrape_search(app_name: str, app_id: int, query: str):
         logger.log(f'> {i}) {item_name} - {item_id}')
         i += 1
 
-    selected = input('>> Select items [all/indexes]: ')
+    selected = input('>> Select items [all/indexes/exit]: ')
 
     if selected == 'all':
         logger.special('Adding all items...')
-        for (id, item) in cache.items():
-            out += STEAMCMD_WORKSHOP.format(app_id, item['id'])
+        for (idx, item) in cache.items():
+            sanitized_name = sanitize_text(item['name'])
+            out[sanitized_name] = {'app_id': app_id,
+                                   'name': item['name'], 'id': item['id'], 'index': idx}
+
             logger.special(f'> Adding item: ' + item['name'])
-    else:
+    elif selected[0].isnumeric():
         for idx in selected.split(' '):
             try:
                 # Converting idx to int because it str and int hashes are different.
                 (_, id), (_, name) = cache[int(idx)].items()
-                out += STEAMCMD_WORKSHOP.format(app_id, id)
+                sanitized_name = sanitize_text(name)
+                out[sanitized_name] = {'app_id': app_id,
+                                       'name': name, 'id': id, 'index': idx}
 
                 logger.special(f'> Adding item: {name}')
             except:
                 logger.error(f'> {idx} not found')
-
-    output_commands(out, app_name, query)
 
     return out
 
