@@ -2,6 +2,7 @@
 # Printing functions
 # =========================
 import os
+from random import random
 
 from src.consts import BASE_DIR, COMMANDS, STEAMCMD_LOGIN, load_config
 
@@ -64,7 +65,7 @@ def create_help_commands(commands: list[dict]):
 # =========================
 
 
-def output_commands(out: str, options: list[str], *vars):
+def output_commands(out: str, options: list[str], *vars: list[str]):
     config = load_config()
     out_dir = ''
 
@@ -75,7 +76,7 @@ def output_commands(out: str, options: list[str], *vars):
     if not out_dir and config['out_dir']:
         out_dir = config['out_dir']
     elif not out_dir:
-        out_dir = '-'.join(vars) + '.txt'
+        out_dir = '-'.join(vars) + f'-{create_random_char(3)}.txt'
 
     out_dir = os.path.join(BASE_DIR, out_dir)
     with open(out_dir, config['mode']) as f:
@@ -131,3 +132,18 @@ def read_output_file(path: str):
             return f.read()
     else:
         raise Exception(f'File at "{path}" does not exist')
+
+# =========================
+# Misc functions
+# =========================
+
+
+def create_random_char(_len: int):
+    def ch_code():
+        return (random() * 24).__ceil__()
+
+    res = ''
+    while _len:
+        res += chr(65 + ch_code())
+        _len -= 1
+    return res

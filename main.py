@@ -3,11 +3,11 @@ import os
 from shlex import split as shlex_split
 from src.consts import BASE_DIR, STEAMCMD_WORKSHOP, VERSION
 from src.handlers.alias_handler import show_alias
-from src.utils import (clean_quotes, get_arg_index, output_commands,
+from src.utils import (clean_quotes, create_random_char, get_arg_index, output_commands,
                        read_output_file, show_items, show_welcome, show_help)
 
 from includes.Log4Py.log4Py import Logger
-from src.scrapper import scrape_root
+from src.scrapper import is_valid_app_id, scrape_root
 
 if __name__ == '__main__':
     data = {}
@@ -61,7 +61,7 @@ if __name__ == '__main__':
 
                     i += 1
 
-                dir = output_commands(out, options, 'items', i)
+                dir = output_commands(out, options, 'items', str(i))
                 logger.alter(f'> Created output file at: {dir} with {i} items')
 
             # ======================
@@ -88,15 +88,23 @@ if __name__ == '__main__':
                     logger.log('\n' + res)
                 logger.alter(f'> Found {item_count} item(s)')
 
+            elif _input.startswith('aliases'):
+                options = shlex_split(_input)[1:]
+
+                if '--add' in options:
+                    idx = get_arg_index(options, '--add')
+                    val = options[idx]
+
+                    text, app_id = is_valid_app_id(val)
+
+                i = show_alias()
+                logger.alter(f'> Found {i} aliases(s)')
+
             # ======================
             # Printing commands
             # ======================
             elif _input == 'help':
                 show_help()
-            elif _input == 'aliases':
-                i = show_alias()
-
-                logger.alter(f'> Found {i} aliases(s)')
 
             # ======================
             # Misc commands
