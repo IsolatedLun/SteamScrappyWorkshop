@@ -31,7 +31,7 @@ def scrape_root(scrape_type: str, alias: int,  *args):
         logger.error(f'Scrapper "{scrape_type}" not found')
 
 
-def scrape_collection(app_name: str, app_id: str, collectionId: str):
+def scrape_collection(app_name: str, app_id: str, collection_id: str):
     """
         Scrapes the items id's of a steam collection.
     """
@@ -44,18 +44,18 @@ def scrape_collection(app_name: str, app_id: str, collectionId: str):
         return soup.select('.workshopItemTitle')[0].text
 
     # Assertion 1
-    if not collectionId.isnumeric():
+    if not collection_id.isnumeric():
         logger.error(f"> Collection id must only contain numbers")
         return 0, 0
 
-    logger.log(f'> Opening {STEAM_URL + str(collectionId)}')
+    logger.log(f'> Opening {STEAM_URL + str(collection_id)}')
 
-    req = requests.get(STEAM_URL + str(collectionId))
+    req = requests.get(STEAM_URL + str(collection_id))
     req_title = bs(req.text, 'html.parser').title.text
 
     # Assertion 2
     if req_title.endswith('Error'):
-        logger.error(f"> Invalid collection '{collectionId}'")
+        logger.error(f"> Invalid collection '{collection_id}'")
         return 0, 0
 
     soup = bs(req.text, 'lxml')
@@ -66,23 +66,19 @@ def scrape_collection(app_name: str, app_id: str, collectionId: str):
     logger.special(f'> Detected collection: {collection_name}')
 
     i = 0
-    out = ''
+    out = {}
     if text.text.find('collection') > -1:
         a_tags = soup.select('.collectionItem')
 
         for item in a_tags:
-            x = item['id'].split('_')[1]
-            # Download command
-            out += STEAMCMD_WORKSHOP.format(app_id, id)
+            item_id = item['id'].split('_')[1]
+            item_name = item.select('.workshopItemTitle')[0].text
+
+            out[len(out)] = {'app_id': app_id,
+                             'name': item_name, 'id': item_id}
             i += 1
 
-            logger.log(f'> Found item: {x}')
-
-    with open(f'{app_name}-{collection_name}.txt', 'w') as f:
-        f.write(out)
-
-    logger.alter('> DONE')
-    output_commands(out, app_name, collection_name)
+            logger.log(f'> Found: {item_name}')
 
     return i, out
 
@@ -93,7 +89,7 @@ def scrape_search(app_name: str, app_id: int, query: str):
     """
     from bs4 import BeautifulSoup as bs
 
-    def get_item_details(item):
+    def getItemDetails(item):
         """
             Gets the item name and id
         """
@@ -112,7 +108,7 @@ def scrape_search(app_name: str, app_id: int, query: str):
     out = {}
     cache = {}
     for item in soup.select('.workshopItem'):
-        item_name, item_id = get_item_details(item)
+        item_name, item_id = getItemDetails(item)
         # Storing by index for simplicity
         cache[i] = {'id': item_id, 'name': item_name}
 
@@ -124,9 +120,8 @@ def scrape_search(app_name: str, app_id: int, query: str):
     if selected == 'all':
         logger.special('Adding all items...')
         for (idx, item) in cache.items():
-            sanitized_name = sanitize_text(item['name'])
-            out[sanitized_name] = {'app_id': app_id,
-                                   'name': item['name'], 'id': item['id'], 'index': idx}
+            out[len(out)] = {'app_id': app_id,
+                             'name': item['name'], 'id': item['id']}
 
             logger.special(f'> Adding item: ' + item['name'])
     elif selected[0].isnumeric():
@@ -134,9 +129,7 @@ def scrape_search(app_name: str, app_id: int, query: str):
             try:
                 # Converting idx to int because it str and int hashes are different.
                 (_, id), (_, name) = cache[int(idx)].items()
-                sanitized_name = sanitize_text(name)
-                out[sanitized_name] = {'app_id': app_id,
-                                       'name': name, 'id': id, 'index': idx}
+                out[len(out)] = {'app_id': app_id, 'name': name, 'id': id}
 
                 logger.special(f'> Adding item: {name}')
             except:
@@ -162,7 +155,7 @@ def is_valid_app_id(alias: str):
 
         if not is_in_aliases:
             set_alias(text)
-            logger.special(f'Added alias {text} - {app_id}')
+            logger.special(f'Added alias {text} => {app_id}')
 
         return text, app_id
     return False, -1

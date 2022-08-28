@@ -88,7 +88,13 @@ def output_commands(out: str, *vars: list[str]):
 
 
 def get_arg_index(commands: list[str], command):
-    return commands.index(command) + 1
+    res = commands.index(command) + 1
+
+    if res > len(commands) - 1:
+        raise Exception(
+            f'Invalid parameters: "{command}" must have an value after it')
+    else:
+        return res
 
 # =========================
 # Text functions
