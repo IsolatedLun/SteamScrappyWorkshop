@@ -30,4 +30,5 @@ def show_alias():
             i += 1
 
         print('-' * 48)
-        print(f'> Found {i} aliases')
+
+        return i

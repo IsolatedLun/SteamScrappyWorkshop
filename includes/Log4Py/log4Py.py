@@ -65,7 +65,7 @@ class Logger(object):
             self.warn(
                 f'Save function must be a function, not "{type(target)}".')
 
-    def set_level(self, level_name: str, color_code: int, allow_log_func_creation: bool = True):
+    def set_level(self, level_name: str, color_code: int, allow_log_func_creation: bool = True, silent: bool = True):
         override = self.config['color_codes'].get(level_name, False)
         self.config['color_codes'][level_name.upper()] = color_code
 
@@ -75,8 +75,10 @@ class Logger(object):
             if allow_log_func_creation:
                 setattr(self, level_name.lower(), self.log)
 
-                self.alter(f'Created log function {level_name.lower()}().')
-            self.alter(f'Set new level {level_name}.')
+                if not silent:
+                    self.alter(f'Created log function {level_name.lower()}().')
+            if not silent:
+                self.alter(f'Set new level {level_name}.')
 
     # ======================
     # Log functions

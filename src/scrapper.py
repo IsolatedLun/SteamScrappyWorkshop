@@ -16,12 +16,7 @@ def scrape_root(scrape_type: str, alias: int,  *args):
         Validates the app id then calls the scraper with it's arguments depeding on the type
     """
     app_name, app_id = is_valid_app_id(alias)
-
-    if not app_name:
-        logger.error(f'{app_id} is not a valid application ID')
-        return
-    else:
-        logger.special(f'> Detected app: {app_name}')
+    logger.special(f'> Detected app: {app_name}')
 
     if scrape_type == 'collection':
         return scrape_collection(app_name, app_id, *args)
@@ -126,13 +121,13 @@ def scrape_search(app_name: str, app_id: int, query: str):
             logger.special(f'> Adding item: ' + item['name'])
     elif selected[0].isnumeric():
         for idx in selected.split(' '):
-            try:
-                # Converting idx to int because it str and int hashes are different.
+            # Converting idx to int because it str and int hashes are different.
+            if cache.get(int(idx), False):
                 (_, id), (_, name) = cache[int(idx)].items()
                 out[len(out)] = {'app_id': app_id, 'name': name, 'id': id}
 
                 logger.special(f'> Adding item: {name}')
-            except:
+            else:
                 logger.error(f'> {idx} not found')
 
     return out
@@ -158,7 +153,7 @@ def is_valid_app_id(alias: str):
             logger.special(f'Added alias {text} => {app_id}')
 
         return text, app_id
-    return False, -1
+    raise Exception(f'"{app_id}" is not a valid application ID')
 
 
 def sanitize_steamcmd_command(command: str):

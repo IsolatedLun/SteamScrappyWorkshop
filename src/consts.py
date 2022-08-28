@@ -23,9 +23,15 @@ ALIASES_DIR = os.path.join(BASE_DIR, 'aliases.json')
 
 COMMANDS = [
     {
+        'name': 'download',
+        'help_text': 'Automatically runs steamcmd on the specified file',
+        'args': ['File Name'],
+        'prefixes': []
+    },
+    {
         'name': 'collection',
         'args': [
-            'app_alias', 'collection_id'
+            'App Alias', 'Collection Id'
         ],
         'prefixes': [
             {
@@ -38,7 +44,7 @@ COMMANDS = [
     {
         'name': 'search',
         'args': [
-            'app_alias', 'query'
+            'App Alias', 'Query'
         ],
         'prefixes': [
             {
@@ -47,12 +53,6 @@ COMMANDS = [
             }
         ],
         'help_text': ''
-    },
-    {
-        'name': 'aliases',
-        'help_text': 'Shows aliases',
-        'args': [],
-        'prefixes': []
     },
     {
         'name': 'output',
@@ -64,5 +64,17 @@ COMMANDS = [
             }
         ],
         'help_text': ''
+    },
+    {
+        'name': 'aliases',
+        'help_text': 'Shows aliases',
+        'args': [],
+        'prefixes': []
+    },
+    {
+        'name': '" "',
+        'help_text': 'Use quotes for multiple words => "God of war"',
+        'args': [],
+        'prefixes': []
     }
 ]

@@ -45,7 +45,9 @@ def create_help_commands(commands: list[dict]):
     for i, command in enumerate(commands):
         args = ''
         prefixes = ''
-        tab_count = ' ' * (len(command['name']) % 8)
+        tab_count = ' ' * (
+            (len(command['name']) % 8) + len(command['name'])
+        )
 
         for arg in command['args']:
             args += f'<{arg}> '
@@ -53,7 +55,7 @@ def create_help_commands(commands: list[dict]):
             prefixes += f'{prefix["prefix"]}({prefix["help_text"]}) '
 
         res += f"| {command['name']}{tab_count} {command['help_text']} {args} {prefixes}"
-        res += '\n' if i < len(command) - 1 else ''
+        res += '\n' if i < len(command) + 1 else ''
 
     return res
 
@@ -62,13 +64,17 @@ def create_help_commands(commands: list[dict]):
 # =========================
 
 
-def output_commands(out: str, *vars: list[str]):
+def output_commands(out: str, options: list[str], *vars):
     config = load_config()
-
     out_dir = ''
-    if config['out_dir']:
+
+    if '--out_dir' in options:
+        idx = get_arg_index(options, '--out_dir')
+        out_dir = clean_quotes(options[idx])
+
+    if not out_dir and config['out_dir']:
         out_dir = config['out_dir']
-    else:
+    elif not out_dir:
         out_dir = '-'.join(vars) + '.txt'
 
     out_dir = os.path.join(BASE_DIR, out_dir)
@@ -81,6 +87,7 @@ def output_commands(out: str, *vars: list[str]):
             f.write(out)
         else:
             f.write(STEAMCMD_LOGIN + out)
+    return out_dir
 
 # =========================
 # Command functions
@@ -106,3 +113,21 @@ def sanitize_text(text: str):
         .replace("'", '').replace('—', '') \
         .replace('[', '').replace(']', '') \
         .replace('"', '')
+
+
+def clean_quotes(text: str):
+    return text.replace('"', '')
+
+# =========================
+# File functions
+# =========================
+
+
+def read_output_file(path: str):
+    if os.path.exists(path):
+        with open(path, 'r') as f:
+            f.seek(0)
+
+            return f.read()
+    else:
+        raise Exception(f'File at "{path}" does not exist')
