@@ -24,7 +24,7 @@ ALIASES_DIR = os.path.join(BASE_DIR, 'aliases.json')
 COMMANDS = [
     {
         'name': 'download',
-        'help_text': 'Automatically runs steamcmd on the specified file',
+        'help_text': 'Runs Steamcmd on the file',
         'args': ['File Name'],
         'prefixes': []
     },
@@ -36,7 +36,7 @@ COMMANDS = [
         'prefixes': [
             {
                 'prefix': '--download',
-                'help_text': 'Automatically download items when finished.'
+                'help_text': 'empty'
             }
         ],
         'help_text': ''
@@ -49,11 +49,11 @@ COMMANDS = [
         'prefixes': [
             {
                 'prefix': '--download',
-                'help_text': 'Automatically download items when finished.'
+                'help_text': 'empty'
             },
             {
                 'prefix': '--page',
-                'help_text': ''
+                'help_text': 'index'
             }
         ],
         'help_text': ''
@@ -64,7 +64,7 @@ COMMANDS = [
         'prefixes': [
             {
                 'prefix': '--out_dir',
-                'help_text': 'The location of the output'
+                'help_text': 'location'
             }
         ],
         'help_text': ''
@@ -77,7 +77,7 @@ COMMANDS = [
     },
     {
         'name': '" "',
-        'help_text': 'Use quotes for multiple words => "God of war"',
+        'help_text': 'Use quotes => "God of war"',
         'args': [],
         'prefixes': []
     }

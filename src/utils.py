@@ -46,9 +46,11 @@ def create_help_commands(commands: list[dict]):
         return text + ' ' + sep if text else ''
 
     res = ''
+    command_list = [
+        ['Command', 'Help', 'Arguments', 'Prefixes'],
+        ['--------', '-----', '----------', '---------']
+    ]
     for i, command in enumerate(commands):
-        command_line = '|{0:<23} => {1:<25} {2:>25}'
-        command_line_with_help = '|{0:<23} => {1:<25} {2:>25} {3:>30}'
         args = ''
         prefixes = ''
 
@@ -57,14 +59,15 @@ def create_help_commands(commands: list[dict]):
         for prefix in command['prefixes']:
             prefixes += f'{prefix["prefix"]}({prefix["help_text"]}) '
 
-        if command['help_text']:
-            res += command_line_with_help.format(command['name'],
-                                                 args, prefixes, command['help_text'])
-        else:
-            res += command_line.format(command['name'], args, prefixes)
-        res += '\n' if i < len(command) + 1 else ''
+        command_list.append([
+            command['name'], command['help_text'], args, prefixes
+        ])
 
-    return res
+    table = create_even_table(
+        command_list
+    )
+
+    return table
 
 # =========================
 # Writing functions
@@ -153,3 +156,13 @@ def create_random_char(_len: int):
         res += chr(65 + ch_code())
         _len -= 1
     return res
+
+
+def create_even_table(rows: list[str]):
+    widths = [max(map(len, col)) for col in zip(*rows)]
+    table = ''
+
+    for row in rows:
+        table += '   '.join((val.ljust(width)
+                             for val, width in zip(row, widths))) + '\n'
+    return table
