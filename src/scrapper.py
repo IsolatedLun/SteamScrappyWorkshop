@@ -1,6 +1,6 @@
 import os
 from src.handlers.alias_handler import handle_alias
-from src.utils import output_commands, sanitize_text
+from src.utils import get_arg_index, output_commands, sanitize_text
 from includes.Log4Py.log4Py import Logger
 from src.consts import STEAM_APP_URL, STEAM_SEARCH_URL, STEAM_URL, STEAMCMD_DIR, STEAMCMD_WORKSHOP
 
@@ -11,7 +11,7 @@ logger = Logger(__main__)
 logger.set_level('special', 34)
 
 
-def scrape_root(scrape_type: str, alias: int,  *args):
+def scrape_root(scrape_type: str, alias: int, options: list[str], *args):
     """
         Validates the app id then calls the scraper with it's arguments depeding on the type
     """
@@ -19,14 +19,14 @@ def scrape_root(scrape_type: str, alias: int,  *args):
     logger.special(f'> Detected app: {app_name}')
 
     if scrape_type == 'collection':
-        return scrape_collection(app_name, app_id, *args)
+        return scrape_collection(app_name, app_id, options, *args)
     elif scrape_type == 'search':
-        return scrape_search(app_name, app_id, *args)
+        return scrape_search(app_name, app_id, options, *args)
     else:
         logger.error(f'Scrapper "{scrape_type}" not found')
 
 
-def scrape_collection(app_name: str, app_id: str, collection_id: str):
+def scrape_collection(app_name: str, app_id: str, collection_id: str, options: list[str]):
     """
         Scrapes the items id's of a steam collection.
     """
@@ -78,7 +78,7 @@ def scrape_collection(app_name: str, app_id: str, collection_id: str):
     return i, out
 
 
-def scrape_search(app_name: str, app_id: int, query: str):
+def scrape_search(app_name: str, app_id: int, options: list[str], query: str):
     """
         Scrapes an app's search page for items depeding on the query.
     """
@@ -94,9 +94,14 @@ def scrape_search(app_name: str, app_id: int, query: str):
 
         return item_name, item_id
 
-    logger.log(f'> Opening {STEAM_SEARCH_URL.format(app_id, query)}')
+    page = 1
+    if '--page' in options:
+        idx = get_arg_index(options, '--page')
+        page = options[idx]
 
-    req = requests.get(STEAM_SEARCH_URL.format(app_id, query))
+    logger.log(f'> Opening {STEAM_SEARCH_URL.format(app_id, query, page)}')
+
+    req = requests.get(STEAM_SEARCH_URL.format(app_id, query, page))
     soup = bs(req.text, 'lxml')
 
     i = 1

@@ -42,20 +42,26 @@ def show_items(_items: list[dict]):
 
 
 def create_help_commands(commands: list[dict]):
+    def with_sep(text, sep='|'):
+        return text + ' ' + sep if text else ''
+
     res = ''
     for i, command in enumerate(commands):
+        command_line = '|{0:<23} => {1:<25} {2:>25}'
+        command_line_with_help = '|{0:<23} => {1:<25} {2:>25} {3:>30}'
         args = ''
         prefixes = ''
-        tab_count = ' ' * (
-            (len(command['name']) % 8) + len(command['name'])
-        )
 
         for arg in command['args']:
             args += f'<{arg}> '
         for prefix in command['prefixes']:
             prefixes += f'{prefix["prefix"]}({prefix["help_text"]}) '
 
-        res += f"| {command['name']}{tab_count} {command['help_text']} {args} {prefixes}"
+        if command['help_text']:
+            res += command_line_with_help.format(command['name'],
+                                                 args, prefixes, command['help_text'])
+        else:
+            res += command_line.format(command['name'], args, prefixes)
         res += '\n' if i < len(command) + 1 else ''
 
     return res

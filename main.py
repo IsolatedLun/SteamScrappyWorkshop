@@ -35,7 +35,7 @@ if __name__ == '__main__':
             elif _input.startswith('search'):
                 alias, query, *options = tuple(shlex_split(_input)[1:])
                 items = scrape_root('search', clean_quotes(
-                    alias), clean_quotes(query))
+                    alias), options, clean_quotes(query))
 
                 data = data | items
 
