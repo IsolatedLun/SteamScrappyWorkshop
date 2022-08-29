@@ -4,7 +4,7 @@ Download or search any items/collections.
 
 ## Examples
 
-- If you want to use the app's name eg. **rimworld** than it's id **294100**, then you have to add it to the aliases via `aliases --add 294100`
+- If you want to use the app's name eg. **rimworld** instead of it's id **294100**, then you have to add it to the aliases via `aliases --add 294100`
 - So `search rimworld "Combat extended"` works instead of `search 294100 "Combat extended"`
 
 <br />
@@ -17,6 +17,7 @@ Output :
 3. Combat Extended Guns - 1582570547
 4. Combat Extended Melee - 1924933379
 5. Combat Effects for Combat Extended - 1756442393
+...
 ```
 
 - You can either select all items by typing `all` or select multiple ones by `1 2 3` or `exit`

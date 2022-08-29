@@ -3,7 +3,7 @@ import os
 from shlex import split as shlex_split
 from src.consts import BASE_DIR, STEAMCMD_WORKSHOP, VERSION
 from src.handlers.alias_handler import show_alias
-from src.utils import (clean_quotes, create_random_char, get_arg_index, output_commands,
+from src.utils import (clean_quotes, get_arg_index, output_commands,
                        read_output_file, show_items, show_welcome, show_help)
 
 from includes.Log4Py.log4Py import Logger
@@ -72,15 +72,23 @@ if __name__ == '__main__':
 
                 if '--remove' in options:
                     idx = get_arg_index(options, '--remove')
-                    val = int(options[idx])
+                    val = options[idx]
 
-                    if data.get(val, False):
-                        del data[val]
-                        logger.alter(f'Removed item: {val}')
+                    if val.isnumeric():
+                        val = int(val)
+
+                        if data.get(val, False):
+                            del data[val]
+                            logger.alter(f'Removed item: {val}')
+                        else:
+                            logger.error(
+                                f'Item with an index of "{val}" not found')
+                        continue
+                    elif val == 'all':
+                        logger.warn(f'Clearing {len(data)} item(s)')
+                        data = {}
                     else:
-                        logger.error(
-                            f'Item with an index of "{val}" not found')
-                    continue
+                        raise Exception(f'> Item command "{val}" not found')
 
                 res, item_count = show_items(data)
 
@@ -104,7 +112,7 @@ if __name__ == '__main__':
             # Printing commands
             # ======================
             elif _input == 'help':
-                show_help()
+                print(show_help())
 
             # ======================
             # Misc commands
