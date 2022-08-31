@@ -33,12 +33,7 @@ COMMANDS = [
         'args': [
             'App Alias', 'Collection Id'
         ],
-        'prefixes': [
-            {
-                'prefix': '--download',
-                'help_text': 'empty'
-            }
-        ],
+        'prefixes': [],
         'help_text': ''
     },
     {
@@ -47,10 +42,6 @@ COMMANDS = [
             'App Alias', 'Query'
         ],
         'prefixes': [
-            {
-                'prefix': '--download',
-                'help_text': 'empty'
-            },
             {
                 'prefix': '--page',
                 'help_text': 'index'

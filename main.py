@@ -7,7 +7,7 @@ from src.utils import (clean_quotes, get_arg_index, output_commands,
                        read_output_file, show_items, show_welcome, show_help)
 
 from includes.Log4Py.log4Py import Logger
-from src.scrapper import is_valid_app_id, scrape_root
+from src.scrapper import is_valid_app_id, run_steamcmd, scrape_root
 
 if __name__ == '__main__':
     data = {}
@@ -41,11 +41,11 @@ if __name__ == '__main__':
 
             elif _input.startswith('download'):
                 file_name, *options = tuple(shlex_split(_input)[1:])
-
                 path_dir = os.path.join(BASE_DIR, file_name)
+                command = read_output_file(path_dir)
                 opened_steamcmd = True
 
-                read_output_file(path_dir)
+                run_steamcmd(command)
 
             # ======================
             # Outputting commands
