@@ -44,7 +44,7 @@ COMMANDS = [
         'prefixes': [
             {
                 'prefix': '--page',
-                'help_text': 'index'
+                'help_text': 'Index'
             }
         ],
         'help_text': ''
@@ -64,7 +64,23 @@ COMMANDS = [
         'name': 'aliases',
         'help_text': 'Shows aliases',
         'args': [],
-        'prefixes': []
+        'prefixes': [
+            {
+                'prefix': '--add',
+                'help_text': 'App Id'
+            }
+        ]
+    },
+    {
+        'name': 'items',
+        'help_text': 'Shows items',
+        'args': [],
+        'prefixes': [
+            {
+                'prefix': '--remove',
+                'help_text': 'Index'
+            }
+        ]
     },
     {
         'name': '" "',

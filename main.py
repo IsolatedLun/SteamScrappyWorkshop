@@ -27,17 +27,17 @@ if __name__ == '__main__':
                 alias, collectionId, *options = tuple(shlex_split(_input)[1:])
 
                 item_count, items = scrape_root(
-                    'collection', clean_quotes(alias), collectionId)
+                    'collection', clean_quotes(alias), collectionId, options, len(data))
                 logger.alter(f'> Found {item_count} item(s)')
 
-                data = data | items
+                data = {**data, **items}
 
             elif _input.startswith('search'):
                 alias, query, *options = tuple(shlex_split(_input)[1:])
                 items = scrape_root('search', clean_quotes(
-                    alias), options, clean_quotes(query))
+                    alias), options, len(data), clean_quotes(query))
 
-                data = data | items
+                data = {**data, **items}
 
             elif _input.startswith('download'):
                 file_name, *options = tuple(shlex_split(_input)[1:])

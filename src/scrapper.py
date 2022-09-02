@@ -11,7 +11,7 @@ logger = Logger(__main__)
 logger.set_level('special', 34)
 
 
-def scrape_root(scrape_type: str, alias: int, options: list[str], *args):
+def scrape_root(scrape_type: str, alias: int, options: list[str], data_len, *args):
     """
         Validates the app id then calls the scraper with it's arguments depeding on the type
     """
@@ -19,14 +19,14 @@ def scrape_root(scrape_type: str, alias: int, options: list[str], *args):
     logger.special(f'> Detected app: {app_name}')
 
     if scrape_type == 'collection':
-        return scrape_collection(app_name, app_id, options, *args)
+        return scrape_collection(app_name, app_id, options, data_len, *args)
     elif scrape_type == 'search':
-        return scrape_search(app_name, app_id, options, *args)
+        return scrape_search(app_name, app_id, options, data_len, *args)
     else:
         logger.error(f'Scrapper "{scrape_type}" not found')
 
 
-def scrape_collection(app_name: str, app_id: str, collection_id: str, options: list[str]):
+def scrape_collection(app_name: str, app_id: str, collection_id: str, options: list[str], data_len):
     """
         Scrapes the items id's of a steam collection.
     """
@@ -69,8 +69,8 @@ def scrape_collection(app_name: str, app_id: str, collection_id: str, options: l
             item_id = item['id'].split('_')[1]
             item_name = item.select('.workshopItemTitle')[0].text
 
-            out[len(out)] = {'app_id': app_id,
-                             'name': item_name, 'id': item_id}
+            out[item_id] = {'app_id': app_id,
+                            'name': item_name, 'id': item_id}
             i += 1
 
             logger.log(f'> Found: {item_name}')
@@ -78,7 +78,7 @@ def scrape_collection(app_name: str, app_id: str, collection_id: str, options: l
     return i, out
 
 
-def scrape_search(app_name: str, app_id: int, options: list[str], query: str):
+def scrape_search(app_name: str, app_id: int, options: list[str], data_len, query: str):
     """
         Scrapes an app's search page for items depeding on the query.
     """
@@ -119,17 +119,17 @@ def scrape_search(app_name: str, app_id: int, options: list[str], query: str):
 
     if selected == 'all':
         logger.special('Adding all items...')
-        for (idx, item) in cache.items():
-            out[len(out)] = {'app_id': app_id,
-                             'name': item['name'], 'id': item['id']}
+        for i, (idx, item) in enumerate(cache.items()):
+            out[data_len + i] = {'app_id': app_id,
+                                 'name': item['name'], 'id': item['id']}
 
             logger.special(f'> Adding item: ' + item['name'])
     elif selected[0].isnumeric():
-        for idx in selected.split(' '):
+        for i, idx in enumerate(selected.split(' ')):
             # Converting idx to int because it str and int hashes are different.
             if cache.get(int(idx), False):
                 (_, id), (_, name) = cache[int(idx)].items()
-                out[len(out)] = {'app_id': app_id, 'name': name, 'id': id}
+                out[data_len + i] = {'app_id': app_id, 'name': name, 'id': id}
 
                 logger.special(f'> Adding item: {name}')
             else:
