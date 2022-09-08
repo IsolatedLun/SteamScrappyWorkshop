@@ -2,11 +2,13 @@ import json
 import os
 from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 def load_config():
     with open(os.path.join(BASE_DIR, 'config.json'), 'r') as f:
         return json.load(f)
 
+__CONFIG = load_config()
 
 STEAM_URL = 'https://steamcommunity.com/sharedfiles/filedetails/?id='
 STEAM_APP_URL = 'https://store.steampowered.com/app/'
@@ -16,10 +18,10 @@ STEAM_SEARCH_URL = 'https://steamcommunity.com/workshop/browse/?appid={0}&search
 STEAMCMD_WORKSHOP = ' +workshop_download_item {0} {1}'
 STEAMCMD_LOGIN = 'steamcmd +login anonymous'
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-STEAMCMD_DIR = load_config()['steamcmd_dir']
+STEAMCMD_DIR = __CONFIG['steamcmd_dir']
 ALIASES_DIR = os.path.join(BASE_DIR, 'aliases.json')
+
+OUTPUT_IDENTIFIER = 'scrappyd'
 
 COMMANDS = [
     {

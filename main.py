@@ -3,7 +3,7 @@ import os
 from shlex import split as shlex_split
 from src.consts import BASE_DIR, STEAMCMD_WORKSHOP, VERSION
 from src.handlers.alias_handler import show_alias
-from src.utils import (clean_quotes, get_arg_index, output_commands,
+from src.utils import (clean_quotes, get_arg_index, sub_str, output_commands,
                        read_output_file, show_items, show_welcome, show_help)
 
 from includes.Log4Py.log4Py import Logger
@@ -14,6 +14,7 @@ if __name__ == '__main__':
     loop = True
     opened_steamcmd = False
     logger = Logger(__main__)
+    print(sub_str('MEOW', 'OW'))
 
     show_welcome(VERSION)  # No need to log useless info
     while loop:

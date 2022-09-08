@@ -42,3 +42,10 @@ Output :
 #### Misc
 
 - If you want every output file to be unique make `out_dir` -> `null`.
+
+- If you want to output to your own specified folder open `config.json` and change `out_dir`.
+
+#### Output Examples
+
+- `my_custom_folder_name/{}` => `output --out_dir custom_sub_folder`, Result: `my_custom_folder_name/custom_sub_folder`
+- `my_custom_folder_name/{}` => `output --out_dir custom_sub_folder`, Result: `my_custom_folder_name/custom_sub_folder`

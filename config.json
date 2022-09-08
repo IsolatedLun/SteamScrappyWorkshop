@@ -1,5 +1,5 @@
 {
-  "out_dir": null,
+  "out_dir": "outputs/{}",
   "mode": "a+",
   "steamcmd_dir": "C:/Users/user/Desktop/steamcmd"
 }
