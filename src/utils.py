@@ -95,22 +95,32 @@ def output_commands(out: str, options: list[str], *vars: list[str]):
 
     config = load_config()
     out_dir = ''
+    has_multiple_params = False
 
-    if '--out_dir' in options :
+    if '--out_dir' in options:
         idx = get_arg_index(options, '--out_dir')
 
         if not len(options) > idx + 1:
             out_dir = clean_quotes(options[idx])
+        else:
+            has_multiple_params = True
 
     # If the user hasn't specified the output in the cli and there is an out_dir in the config
-    if not out_dir and config['out_dir']:
+    if not out_dir and config['out_dir'] and has_multiple_params:
         options.remove('--out_dir') # This is removed since it's useless
 
         if len(options) - 1 > count_sub_str(config['out_dir'], '{}'):
             raise Exception('Too many parameters for output directory')
 
-        fname = generate_file_name(vars) if options[-1] == '*'  else generate_file_name(options[-1])
-        options.remove('*') # This is removed to avoid invalid argument errors
+        fname = ''
+        if len(options) == 0:
+            fname = generate_file_name(vars)
+        else:
+            fname = generate_file_name(vars) if options[-1] == '*'  else generate_file_name(options[-1])
+            try:
+                options.remove('*') # This is removed to avoid invalid argument errors
+            except:
+                pass
 
         out_dir = config['out_dir'].format(*options, fname)
     elif not out_dir:
@@ -119,10 +129,8 @@ def output_commands(out: str, options: list[str], *vars: list[str]):
     # After creating the out_dir, we append the [scrappyd] string to the file name, so that we can access it later
     # This makes sure that the program only interacts with files that have [scrappyd] in their names.
     # Preventing accidential overrides/deletions of other non-related files
-    out_dir = fix_out_dir(out_dir)
-
-    out_dir = os.path.join(BASE_DIR, out_dir)
-
+    out_dir = fix_out_dir(os.path.join(BASE_DIR, out_dir))
+    print(out_dir)
     os.makedirs(os.path.dirname(out_dir), exist_ok=True)
     with open(out_dir, config['mode']) as f:
         f.seek(0)  # goto the 1st line

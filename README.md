@@ -48,4 +48,4 @@ Output :
 #### Output Examples
 
 - `my_custom_folder_name/{}` => `output --out_dir custom_sub_folder`, Result: `my_custom_folder_name/custom_sub_folder`
-- `my_custom_folder_name/{}` => `output --out_dir custom_sub_folder`, Result: `my_custom_folder_name/custom_sub_folder`
+- `my_custom_folder_name/{}/{}` => `output --out_dir custom_sub_folder *`, Result: `my_custom_folder_name/custom_sub_folder/items-0-ABC[scrappyd].txt`
