@@ -41,11 +41,13 @@ Output :
 
 #### Misc
 
-- If you want every output file to be unique make `out_dir` -> `null`.
+- If you want every output file to be unique and just create files in the root directory make `out_dir` -> `null`.
 
 - If you want to output to your own specified folder open `config.json` and change `out_dir`.
 
-#### Output Examples
+#### Output Directory examples
 
-- `my_custom_folder_name/{}` => `output --out_dir custom_sub_folder`, Result: `my_custom_folder_name/custom_sub_folder`
-- `my_custom_folder_name/{}/{}` => `output --out_dir custom_sub_folder *`, Result: `my_custom_folder_name/custom_sub_folder/items-0-ABC[scrappyd].txt`
+**`out_dir` must always have a forward slash with closing braces `name_of_folder/{}`**
+
+- `customFolder/{}` => `output`, Result: `customFolder/items-0-ABC.txt`
+- `customFolder/{}/{}` => `output --dir customSubFolder *`, Result: `customFolder/customSubFolder/items-0-ABC[scrappyd].txt`

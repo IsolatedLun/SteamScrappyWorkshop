@@ -79,6 +79,9 @@ def output_commands(out: str, options: list[str], *vars: list[str]):
         Creates an output text file that contains the command to donwload the items with steamcmd
     """
     def fix_out_dir(out_dir: str):
+        """
+            Appends the [scrappyd] identifier at the end of the text file's name 
+        """
         temp = out_dir
 
         if out_dir.endswith('.txt'):
@@ -97,8 +100,8 @@ def output_commands(out: str, options: list[str], *vars: list[str]):
     out_dir = ''
     has_multiple_params = False
 
-    if '--out_dir' in options:
-        idx = get_arg_index(options, '--out_dir')
+    if '--dir' in options:
+        idx = get_arg_index(options, '--dir')
 
         if not len(options) > idx + 1:
             out_dir = clean_quotes(options[idx])
@@ -107,9 +110,9 @@ def output_commands(out: str, options: list[str], *vars: list[str]):
 
     # If the user hasn't specified the output in the cli and there is an out_dir in the config
     if not out_dir and config['out_dir'] and has_multiple_params:
-        options.remove('--out_dir') # This is removed since it's useless
+        options.remove('--dir') # This is removed since it's useless
 
-        if len(options) - 1 > count_sub_str(config['out_dir'], '{}'):
+        if len(options) > count_sub_str(config['out_dir'], '{}'):
             raise Exception('Too many parameters for output directory')
 
         fname = ''
@@ -123,6 +126,9 @@ def output_commands(out: str, options: list[str], *vars: list[str]):
                 pass
 
         out_dir = config['out_dir'].format(*options, fname)
+    elif not out_dir and config['out_dir']:
+        root_dir = config['out_dir'].split('/')[0]
+        out_dir = os.path.join(root_dir, generate_file_name(vars))
     elif not out_dir:
         out_dir = generate_file_name(vars)
 
@@ -130,7 +136,7 @@ def output_commands(out: str, options: list[str], *vars: list[str]):
     # This makes sure that the program only interacts with files that have [scrappyd] in their names.
     # Preventing accidential overrides/deletions of other non-related files
     out_dir = fix_out_dir(os.path.join(BASE_DIR, out_dir))
-    print(out_dir)
+
     os.makedirs(os.path.dirname(out_dir), exist_ok=True)
     with open(out_dir, config['mode']) as f:
         f.seek(0)  # goto the 1st line

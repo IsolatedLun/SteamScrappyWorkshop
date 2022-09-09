@@ -56,7 +56,7 @@ COMMANDS = [
         'args': [],
         'prefixes': [
             {
-                'prefix': '--out_dir',
+                'prefix': '--dir',
                 'help_text': 'location'
             }
         ],
