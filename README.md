@@ -9,7 +9,7 @@ Download or search any items/collections.
 
 <br />
 
-Output :
+Search Output :
 
 ```
 1. Combat Extended - 1631756268
@@ -25,11 +25,30 @@ Output :
 
 <br />
 
-- Outputting is simple, using `output` with use the **Output path** from `config.json`, you can change it from there **OR** just use `output --out_dir "MY FILE NAME.txt"`
+- Outputting is simple, using `output {...}` (_depeding on the parameters_) from `config.json`, you can change it from there **OR** just use `output --dir "MY FILE NAME.txt"`
+
+## Downloading after creating an output file
+
+- When you want to donwload and have successfully outputted a file, first run `files` and choose which file you want to donwload by it's index...
+
+File Output :
+
+```
+...
+------------------------------------------------
+| items-0-LJB[scrappyd].txt -> [1]
+------------------------------------------------
+...
+```
+
+- After choosing, run `download --file 1`
+- If your file was somehow not found, then you need to input it's full path, so `download {it's directory paths...}/items-0-LJB[scrappyd].txt`
 
 ## Dependencies
 
 - You need [SteamCmd](https://developer.valvesoftware.com/wiki/SteamCMD#Downloading_SteamCMD) installed on your pc and specify it's location in `config.json`.
+
+<br />
 
 ### How to use
 
@@ -45,9 +64,13 @@ Output :
 
 - If you want to output to your own specified folder open `config.json` and change `out_dir`.
 
+---
+
+<br />
+
 #### Output Directory examples
 
-**`out_dir` must always have a forward slash with closing braces `name_of_folder/{}`**
+**`out_dir` must always have a forward slash with closing braces `nameOfFolder/{}`**
 
 - `customFolder/{}` => `output`, Result: `customFolder/items-0-ABC.txt`
 - `customFolder/{}/{}` => `output --dir customSubFolder *`, Result: `customFolder/customSubFolder/items-0-ABC[scrappyd].txt`

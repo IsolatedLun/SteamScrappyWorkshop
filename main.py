@@ -3,6 +3,7 @@ import os
 from shlex import split as shlex_split
 from src.consts import BASE_DIR, STEAMCMD_WORKSHOP, VERSION
 from src.handlers.alias_handler import show_alias
+from src.handlers.file_handler import get_scrappyd_files_by_index, show_files
 from src.utils import (clean_quotes, get_arg_index, sub_str, output_commands,
                        read_output_file, show_items, show_welcome, show_help)
 
@@ -41,8 +42,14 @@ if __name__ == '__main__':
                 data = {**data, **items}
 
             elif _input.startswith('download'):
-                file_name, *options = tuple(shlex_split(_input)[1:])
-                path_dir = os.path.join(BASE_DIR, file_name)
+                options = tuple(shlex_split(_input)[1:])
+
+                if '--file' in options:
+                    idx = get_arg_index(options, '--file')
+                    path_dir = get_scrappyd_files_by_index(int(options[idx]))
+                else:
+                    path_dir = os.path.join(BASE_DIR, options[0])
+
                 command = read_output_file(path_dir)
                 opened_steamcmd = True
 
@@ -108,6 +115,11 @@ if __name__ == '__main__':
 
                 i = show_alias()
                 logger.alter(f'> Found {i} aliases(s)')
+
+            elif _input.startswith('files'):
+                options = shlex_split(_input)[1:]
+                show_files()
+                
 
             # ======================
             # Printing commands

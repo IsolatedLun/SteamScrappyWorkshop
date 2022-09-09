@@ -23,12 +23,19 @@ ALIASES_DIR = os.path.join(BASE_DIR, 'aliases.json')
 
 OUTPUT_IDENTIFIER = 'scrappyd'
 
+BLACKLISTED_DIRS = ['.git', 'src', 'logs', 'includes']
+
 COMMANDS = [
     {
         'name': 'download',
         'help_text': 'Runs Steamcmd on the file',
         'args': ['File Name'],
-        'prefixes': []
+        'prefixes': [
+            {
+                'prefix': '--file', 
+                'help_text': 'Index'
+            }
+        ]
     },
     {
         'name': 'collection',
@@ -83,6 +90,12 @@ COMMANDS = [
                 'help_text': 'Index'
             }
         ]
+    },
+    {
+        'name': 'files',
+        'help_text': 'Shows scrappyd files',
+        'args': [],
+        'prefixes': []
     },
     {
         'name': '" "',

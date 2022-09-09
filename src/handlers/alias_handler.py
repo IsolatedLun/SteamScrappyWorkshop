@@ -24,11 +24,11 @@ def show_alias():
         aliases = json.load(f)
         i = 0
 
-        for (name, id) in aliases.items():
-            print('-' * 48)
-            print(f'| {name} -> {id}')
-            i += 1
-
         print('-' * 48)
+        for (name, id) in aliases.items():
+            print(f'| {name} -> {id}')
+            print('-' * 48)
+
+            i += 1
 
         return i

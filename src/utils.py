@@ -224,6 +224,9 @@ def create_even_table(rows: list[str]):
 def sub_str(x: str, to_search: str):
     i = 0
 
+    if len(to_search) > len(x):
+        return False
+
     while i < len(x):
         if to_search == x[i:i + len(to_search)]:
             return True
