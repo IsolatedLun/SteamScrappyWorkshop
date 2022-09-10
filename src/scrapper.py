@@ -1,8 +1,8 @@
 import os
 from src.handlers.alias_handler import handle_alias
-from src.utils import get_arg_index, output_commands, sanitize_text
+from src.utils import get_arg_index
 from includes.Log4Py.log4Py import Logger
-from src.consts import STEAM_APP_URL, STEAM_SEARCH_URL, STEAM_URL, STEAMCMD_DIR, STEAMCMD_WORKSHOP
+from src.consts import STEAM_APP_URL, STEAM_SEARCH_URL, STEAM_URL, STEAMCMD_DIR
 
 import requests
 import __main__
@@ -128,8 +128,8 @@ def scrape_search(app_name: str, app_id: int, options: list[str], data_len, quer
         for i, idx in enumerate(selected.split(' ')):
             # Converting idx to int because it str and int hashes are different.
             if cache.get(int(idx), False):
-                (_, id), (_, name) = cache[int(idx)].items()
-                out[data_len + i] = {'app_id': app_id, 'name': name, 'id': id}
+                (_, _id), (_, name) = cache[int(idx)].items()
+                out[data_len + i] = {'app_id': app_id, 'name': name, 'id': _id}
 
                 logger.special(f'> Adding item: {name}')
             else:

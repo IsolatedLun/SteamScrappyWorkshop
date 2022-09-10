@@ -3,12 +3,17 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+ALIASES_DIR = os.path.join(BASE_DIR, 'aliases.json')
 
 def load_config():
     with open(os.path.join(BASE_DIR, 'config.json'), 'r') as f:
         return json.load(f)
 
-__CONFIG = load_config()
+def load_aliases():
+    with open(os.path.join(BASE_DIR, ALIASES_DIR), 'r') as f:
+        return json.load(f)
+
+CONFIG = load_config()
 
 STEAM_URL = 'https://steamcommunity.com/sharedfiles/filedetails/?id='
 STEAM_APP_URL = 'https://store.steampowered.com/app/'
@@ -18,12 +23,11 @@ STEAM_SEARCH_URL = 'https://steamcommunity.com/workshop/browse/?appid={0}&search
 STEAMCMD_WORKSHOP = ' +workshop_download_item {0} {1}'
 STEAMCMD_LOGIN = 'steamcmd +login anonymous'
 
-STEAMCMD_DIR = __CONFIG['steamcmd_dir']
-ALIASES_DIR = os.path.join(BASE_DIR, 'aliases.json')
+STEAMCMD_DIR = CONFIG['steamcmd_dir']
 
 OUTPUT_IDENTIFIER = 'scrappyd'
-
 BLACKLISTED_DIRS = ['.git', 'src', 'logs', 'includes']
+DASH_LENGTH = 48
 
 COMMANDS = [
     {
@@ -95,7 +99,16 @@ COMMANDS = [
         'name': 'files',
         'help_text': 'Shows scrappyd files',
         'args': [],
-        'prefixes': []
+        'prefixes': [
+            {
+                'prefix': '--details',
+                'help_text': 'Index'
+            },
+            {
+                'prefix': '--remove',
+                'help_text': 'Index'
+            }
+        ]
     },
     {
         'name': '" "',

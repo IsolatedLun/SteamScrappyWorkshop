@@ -56,13 +56,15 @@ File Output :
 - Tweak `config.json`
 - `python main.py`
 
-**No external python dependencies, all are built-in modules (I think)**
+**No external python dependencies, all are built-in modules (well, hopefully...)**
 
 #### Misc
 
 - If you want every output file to be unique and just create files in the root directory make `out_dir` -> `null`.
 
 - If you want to output to your own specified folder open `config.json` and change `out_dir`.
+
+- You can look at the list of files by using `files`, and if you want to see it's contents (what mods it has from which games), run `files --details INDEX`
 
 ---
 

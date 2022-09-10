@@ -3,8 +3,8 @@ import os
 from shlex import split as shlex_split
 from src.consts import BASE_DIR, STEAMCMD_WORKSHOP, VERSION
 from src.handlers.alias_handler import show_alias
-from src.handlers.file_handler import get_scrappyd_files_by_index, show_files
-from src.utils import (clean_quotes, get_arg_index, sub_str, output_commands,
+from src.handlers.file_handler import get_scrappyd_file_by_index, remove_text_and_scrappyd_files_by_index, show_file, show_files, create_output_file
+from src.utils import (clean_quotes, get_arg_index, sub_str,
                        read_output_file, show_items, show_welcome, show_help)
 
 from includes.Log4Py.log4Py import Logger
@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
                 if '--file' in options:
                     idx = get_arg_index(options, '--file')
-                    path_dir = get_scrappyd_files_by_index(int(options[idx]))
+                    path_dir = get_scrappyd_file_by_index(int(options[idx]))
                 else:
                     path_dir = os.path.join(BASE_DIR, options[0])
 
@@ -69,7 +69,7 @@ if __name__ == '__main__':
 
                     i += 1
 
-                dir = output_commands(out, options, 'items', str(i))
+                dir = create_output_file(out, data, options, 'items', str(i))
                 logger.alter(f'> Created output file at: {dir} with {i} items')
 
             # ======================
@@ -118,7 +118,21 @@ if __name__ == '__main__':
 
             elif _input.startswith('files'):
                 options = shlex_split(_input)[1:]
-                show_files()
+                
+                if '--details' in options:
+                    idx = get_arg_index(options, '--details')
+                    val = int(options[idx])
+
+                    count = show_file(val)
+                    logger.alter(f'Found {count} items')
+                elif '--remove' in options:
+                    idx = get_arg_index(options, '--remove')
+                    val = int(options[idx])
+
+                    file_name = remove_text_and_scrappyd_files_by_index(val)
+                    logger.warn(f'Deleted file "{file_name}" alogn with its ".scrappyd" file')
+                else:
+                    show_files()
                 
 
             # ======================
